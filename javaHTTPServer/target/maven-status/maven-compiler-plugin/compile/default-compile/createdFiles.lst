@@ -1,0 +1,4 @@
+com\chrisServer\httpServer\config\Configuration.class
+com\chrisServer\httpServer\config\ConfigurationManager.class
+com\chrisServer\httpServer\HttpServer.class
+com\chrisServer\httpServer\util\Json.class
