@@ -50,6 +50,6 @@ class HttpParserTest {
                  )
          );
 
-         return null;
+         return inputStream;
     }
 }
