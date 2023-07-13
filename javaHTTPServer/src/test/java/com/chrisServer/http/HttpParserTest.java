@@ -8,8 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class HttpParserTest {
@@ -33,7 +32,9 @@ class HttpParserTest {
             fail(e);
         }
 
+        assertNotNull(request);
         assertEquals(request.getMethod(), HttpMethod.GET);
+        assertEquals(request.getRequestTarget(), "/");
     }
 
     @Test
@@ -45,6 +46,54 @@ class HttpParserTest {
             fail();
         } catch (HttpParsingException e) {
             assertEquals(e.getErrorCode(), HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED);
+        }
+    }
+
+    @Test
+    void parseHttpRequestBadMethod2() {
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                    generateBadTestCaseMethodName2()
+            );
+            fail();
+        } catch (HttpParsingException e) {
+            assertEquals(e.getErrorCode(), HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED);
+        }
+    }
+
+    @Test
+    void parseHttpRequestInvalidNumberOfItems3() {
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                    generateBadTestCaseRequestLineInvalidNumberOfItems3()
+            );
+            fail();
+        } catch (HttpParsingException e) {
+            assertEquals(e.getErrorCode(), HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+        }
+    }
+
+    @Test
+    void parseHttpRequestEmptyRequestLine() {
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                generateBadTestCaseEmptyRequestLine()
+            );
+            fail();
+        } catch (HttpParsingException e) {
+            assertEquals(e.getErrorCode(), HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+        }
+    }
+
+    @Test
+    void parseHttpRequestEmptyOnlyCRandNoLF() {
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                    generateBadTestCaseOnlyCRandNoLF()
+            );
+            fail();
+        } catch (HttpParsingException e) {
+            assertEquals(e.getErrorCode(), HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
         }
     }
 
@@ -78,6 +127,66 @@ class HttpParserTest {
 
     private InputStream generateBadTestCaseMethodName1(){
         String rawData = "GeT / HTTP/1.1\r\n" +
+                "Host: localhost:8080\r\n" +
+                "Accept-Language: en-US,en;q=0.9\r\n" +
+                "Cookie: fs_uid=#16AJCP#4827518073262080:6011646448160768:::#/1704855066\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+
+        return inputStream;
+    }
+
+    private InputStream generateBadTestCaseMethodName2(){
+        String rawData = "GETTTT / HTTP/1.1\r\n" +
+                "Host: localhost:8080\r\n" +
+                "Accept-Language: en-US,en;q=0.9\r\n" +
+                "Cookie: fs_uid=#16AJCP#4827518073262080:6011646448160768:::#/1704855066\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+
+        return inputStream;
+    }
+
+    private InputStream generateBadTestCaseRequestLineInvalidNumberOfItems3(){
+        String rawData = "GET / AAAAAA HTTP/1.1\r\n" +
+                "Host: localhost:8080\r\n" +
+                "Accept-Language: en-US,en;q=0.9\r\n" +
+                "Cookie: fs_uid=#16AJCP#4827518073262080:6011646448160768:::#/1704855066\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+
+        return inputStream;
+    }
+
+    private InputStream generateBadTestCaseEmptyRequestLine(){
+        String rawData = "\r\n" +
+                "Host: localhost:8080\r\n" +
+                "Accept-Language: en-US,en;q=0.9\r\n" +
+                "Cookie: fs_uid=#16AJCP#4827518073262080:6011646448160768:::#/1704855066\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+
+        return inputStream;
+    }
+
+    private InputStream generateBadTestCaseOnlyCRandNoLF(){
+        String rawData = "GET / HTTP/1.1\r" +
                 "Host: localhost:8080\r\n" +
                 "Accept-Language: en-US,en;q=0.9\r\n" +
                 "Cookie: fs_uid=#16AJCP#4827518073262080:6011646448160768:::#/1704855066\r\n";
