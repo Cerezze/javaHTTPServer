@@ -6,8 +6,8 @@ public enum HttpStatusCode {
     CLIENT_ERROR_414_URI_TO_LONG(400, "URI Too Long"),
 
     SERVER_ERROR_500_INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
-    SERVER_ERROR_501_NOT_IMPLEMENTED(501, "Not Implemented")
-    ;
+    SERVER_ERROR_501_NOT_IMPLEMENTED(501, "Not Implemented"),
+    SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED(505, "Not Supported");
 
     public final int STATUS_Code;
     public final String Message;
